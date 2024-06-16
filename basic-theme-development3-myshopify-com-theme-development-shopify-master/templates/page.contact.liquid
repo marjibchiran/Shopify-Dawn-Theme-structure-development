@@ -1,0 +1,46 @@
+<div class="contact-page">
+  <div class="container">
+    <div class="page-header text-center py-5">
+      <h2>{{ page.title }}</h2>
+    </div>
+    {% if page.content %}
+    <div class="page-content">
+      {{ page.content }}
+    </div>
+    {% endif %}
+    <div class="contact-form">
+      {% form 'contact' %}
+        {{ form.errors | default_errors }}
+        {% if form.posted_successfully? %}
+        <div class="form-success-message text-success">
+          <p>Your message submitted successfully</p>
+        </div>
+        {% endif %}
+        <div class="row my-3">
+          <div class="col">
+            <input type="text" class="form-control" placeholder="First name" name="contact[first_name]" value="{% if form.first_name %}{{ form.first_name }}{% else %}{{ customer.first_name }}{% endif %}" required>
+          </div>
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Last name" name="contact[last_name]" value="{% if form.last_name %}{{ form.last_name }}{% else %}{{ customer.last_name }}{% endif %}" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <input type="email" class="form-control" placeholder="Email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% else %}{{ customer.email }}{% endif %}" required>
+          </div>
+          <div class="col">
+            <input type="number" class="form-control" placeholder="Phone" name="contact[phone]" value="{% if form.phone %}{{ form.phone }}{% else %}{{ customer.phone }}{% endif %}" pattern="0-9\-*">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col my-3">
+            <textarea class="form-control" name="contact[body]" placeholder="Write your messages..." rows="10">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+          </div>
+        </div>
+        <div class="action-btn py-3">
+          <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</div>

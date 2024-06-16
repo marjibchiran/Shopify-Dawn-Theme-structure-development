@@ -1,0 +1,141 @@
+<div class="cart-page" id="{{ section.id }}">
+  <div class="cart-heading bg-dark p-4">
+    <div class="header d-flex align-items-center justify-content-center">
+      <h3 class="text-light">Your Cart</h3>
+    </div>
+  </div>
+  <div class="my-2 d-flex align-items-center justify-content-center">
+    <h3>{{ localization.language.name }}</h3>
+    </div>
+
+  <div class="container"></div>
+  {% unless cart.empty? %}
+    <form action="{{ routes.cart_url }}" method="post" id="cart">
+      <div class="row">
+        <div class="col-md-9">
+          <div class="cart-table">
+            <table class="table table-response">
+              <thead>
+                <tr>
+                  <th>Product Info</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Final Price</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for line_item in cart.items %}
+                  <tr>
+                    <td>
+                      <div class="item-content d-flex">
+                        <div class="item_image px-2">
+                          {% if line_item.image != empty %}
+                            <img src="{{ line_item.image | image_url:width:300 }}" width="120" height="auto">
+                          {% endif %}
+                        </div>
+                        <div class="content">
+                          <p class="title">{{ line_item.product.title | link_to: line_item.url }}</p>
+                         <div class="price">
+                           <span>Price: {{ line_item.original_price | money }}</span>
+                         </div> 
+                          {% if line_item.product.has_only_default_variant == false
+                            or line_item.properties.size != 0
+                            or line_item.selling_plan_allocation != null
+                          %}
+                            {% if line_item.product.has_only_default_variant == false %}
+                            <div class="item_options">
+                              {% for option in line_item.options_with_values %}
+                                <span>{{ option.name | escape }}: {{ option.value }}</span><br>
+                              {% endfor %}
+                            </div>
+                              {% endif %}
+                            {% if line_item.selling_plan_allocation != null %}
+                            <div class="selling-plan-">
+                              <span>Selling Plan: {{ line_item.selling_plan_allocation.selling_plan.name }}</span>
+                            </div>
+                              {% endif %}
+                          {% endif %}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="show-wraper">
+                       {% if line_item.original_price != line_item.final_price %}
+                          <del>{{ line_item.original_price | money }}</del><br>
+                          <span class="sale-price">{{ line_item.final_price | money }}</span>
+                         {% else %} 
+                          <span class="original-price">{{ line_item.original_price | money }}</span>
+                        {% endif %}
+                      </div>
+                    </td>
+                    <td>
+                      {{ line_item.variant.inventory_quantity }}
+                      <div class="quantity-part">
+                        <div class="input-group mb-3" style="width: 150px">
+                        <a href="/cart/change?line={{ forloop.index }}&quantity={{ line_item.quantity | minus: 1 }}" class="nav-link input-group-text {% if line_item.variant.inventory_quantity == line_item.quantity %}readonly{% endif %}">{% render 'icons', icon: 'minus' %}</a>
+                        <input type="number" class="form-control" name="updates[]" value="{{ line_item.quantity }}" >
+                        <a href="/cart/change?line={{ forloop.index }}&quantity={{ line_item.quantity | plus: 1 }}" class="nav-link input-group-text {% if line_item.variant.inventory_quantity == line_item.quantity %}disabled{% endif %}">{% render 'icons', icon: 'plus' %}</a>
+                      </div>
+                      </div>
+                    </td>
+                    <td>
+                       <div class="final-price-wraper">
+                       {% if line_item.original_line_price != line_item.final_line_price %}
+                          <del>{{ line_item.original_line_price | money }}</del><br>
+                          <span class="final-sale-price">{{ line_item.final_line_price | money }}</span>
+                         {% else %} 
+                          <span class="final-original-price">{{ line_item.original_line_price | money }}</span>
+                        {% endif %}
+                      </div>
+                    </td>
+                    <td>
+                   <div class="item-remove">
+                     <a href="{{ line_item.url_to_remove }}" class="nvd-link">
+                       <span class="remove-items">{% render 'icons', icon:'trash' %}</span>
+                     </a>
+                   </div>     
+                     
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="checkout-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="cart-info d-flex justify-content-between">
+                  <h3 class="sub-total">Subtotal</h3>
+                  <h4 class="cart-subtotal">{{ cart.total_price | money_with_currency }}</h4>
+                </div>
+                <hr class="my-3">
+                <div class="cart-note">
+                  <label>Note:</label>
+                  <textarea class="form-control" name="note" placeholder="note">{{ cart.note }}</textarea>
+                </div>
+                <div class="cart-actions">
+                  <button type="submit" name="update" class="btn btn-secondary w-100 my-2">Update</button>
+                  <button type="submit" name="checkout" class="btn btn-success w-100">Checkout</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  {% else %}
+    <div class="text-center">
+      <p>Your Cart is empty</p>
+    </div>
+  {% endunless %}
+</div>
+
+{% schema %}
+{
+  "name": "Cart Template",
+  "settings": []
+}
+{% endschema %}

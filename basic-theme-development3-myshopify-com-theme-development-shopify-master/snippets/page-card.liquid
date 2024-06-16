@@ -1,0 +1,16 @@
+{% comment %}
+receives-
+page: page object
+column: variable, bootstrap column (optional)
+{% endcomment %}
+
+<div class="{{ culumn | default: 'col-md-3'}} my-3">
+  <div class="card product-card">
+    <div class="card-body background-color">
+      <a href="{{ page.url }}">
+        <h3>{{ page.title }}</h3>
+      </a>
+    </div>
+  </div>
+</div>
+
